@@ -1,8 +1,14 @@
+import pkg_resources  # Or `import importlib.resources as pkg_resources` for Python 3.7+
+
+def get_rlib_path():
+    binary_path = pkg_resources.resource_filename('stogram_client', 'binaries/librlib.so')
+    return binary_path
+
 import ctypes as ct 
 
 import pathlib 
 
-rlib_path = pathlib.Path(__file__).parent.joinpath("librlib.so").absolute()
+rlib_path = pathlib.Path(__file__).parent.joinpath(get_rlib_path()).absolute()
 
 rlib = ct.cdll.LoadLibrary(rlib_path)
 rlib.rliza_validate.argtypes = [ct.c_char_p]
