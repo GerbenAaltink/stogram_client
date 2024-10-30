@@ -1,7 +1,7 @@
 import importlib.resources as pkg_resources
 
 def get_rlib_path():
-    binary_path = pkg_resources.resource_filename('stogram_client', 'binaries/librlib.so')
+    binary_path = pkg_resources.files('stogram_client.binaries').joinpath('librlib.so')
     return binary_path
 
 import ctypes as ct 
