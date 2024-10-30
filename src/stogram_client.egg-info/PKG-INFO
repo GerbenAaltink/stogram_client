@@ -1,0 +1,13 @@
+Metadata-Version: 2.1
+Name: stogram_client
+Version: 0.1.0
+Summary: Python client for stogram
+Author: Retoor
+Author-email: retoor@retoor.io
+License: MIT
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+
+# Stogram client
+Python client for the stogram pubsub server which is also located at my account. It's an async pubsub client using a custom performant json-only protocol.
+
