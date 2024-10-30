@@ -39,7 +39,6 @@ class Client:
             obj = obj.decode('utf-8')
         async with self.semaphore:
             result = await asyncio.gather(self.write(obj),self.read())
-        print(result)
         return result[1]
 
     async def authenticate(self):
