@@ -1,4 +1,4 @@
-import pkg_resources  # Or `import importlib.resources as pkg_resources` for Python 3.7+
+import importlib.resources as pkg_resources
 
 def get_rlib_path():
     binary_path = pkg_resources.resource_filename('stogram_client', 'binaries/librlib.so')
