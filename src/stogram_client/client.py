@@ -40,7 +40,7 @@ class Client:
             obj = obj.decode('utf-8')
         async with self.semaphore:
             await self.write(obj)
-            result = await self.read())
+            result = await self.read()
             return result
 
     async def authenticate(self):
@@ -95,8 +95,11 @@ class Client:
         ))
 
     async def read(self):
+        result = None 
         async for obj in self:
-            return obj 
+            result = obj
+            break 
+        return result  
 
     async def __aiter__(self):
         while True:
