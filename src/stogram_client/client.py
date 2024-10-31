@@ -1,20 +1,22 @@
 from stogram_client import rlib
 import asyncio
 import json
+import uuid
 
 class Client:
-    def __init__(self, name="stogram", host="127.0.0.1", port=8889):
+    def __init__(self, name=None, host="127.0.0.1", port=8889):
         self.host = host 
         self.port = port 
-        self.name = name 
+        self.name = name or str(uuid.uuid4())
         self.reader = None 
         self.writer = None 
         self.authenticated = False 
         self.event_handler = None
         self.service = None
         self.data = b''
-        self.conncted = False
+        self.connected = False
         self.semaphore = asyncio.Semaphore(1)
+        self.context_semaphore = asyncio.Semaphore(11)
 
     async def add_event_handler(self,handler):
         self.event_handler = handler 
@@ -56,18 +58,21 @@ class Client:
             await self.writer.close()
     
     async def __aenter__(self):
+        await self.context_semaphore.acquire()
         if not self.reader:
             await self.connect()
             self.connected = True 
         return self
 
     async def __aexit__(self,*args,**kwargs):
-        pass
-        #await self.close()
+        await self.close()
+        await self.context_semaphore.release()
+        
         
     async def connect(self):
-        if not self.reader:
+        if not self.connected:
             self.reader, self.writer = await asyncio.open_connection(self.host, self.port)
+            self.connected  = True
             await self.authenticate()
     async def write(self,obj):
         string = json.dumps(obj)
