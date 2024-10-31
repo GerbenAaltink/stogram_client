@@ -55,7 +55,7 @@ class Client:
     async def close(self):
         if self.connected:
             self.connected = False  
-            await self.writer.close()
+            self.writer.close()
     
     async def __aenter__(self):
         await self.context_semaphore.acquire()
