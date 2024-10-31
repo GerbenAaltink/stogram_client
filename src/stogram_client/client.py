@@ -46,13 +46,12 @@ class Client:
             return result
 
     async def authenticate(self):
-        print("Authenticating")
         return await self.call(dict(
             subscriber=self.name,
             event="register"
         ))
 
-    async def close(self):
+    def close(self):
         if self.connected:
             self.connected = False  
             self.writer.close()
@@ -65,7 +64,7 @@ class Client:
         return self
 
     async def __aexit__(self,*args,**kwargs):
-        await self.close()
+        self.close()
         self.context_semaphore.release()
         
         
