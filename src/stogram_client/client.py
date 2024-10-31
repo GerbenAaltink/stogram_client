@@ -60,6 +60,7 @@ class Client:
         return self
 
     async def __aexit__(self,*args,**kwargs):
+        pass
         #await self.close()
         
     async def connect(self):
