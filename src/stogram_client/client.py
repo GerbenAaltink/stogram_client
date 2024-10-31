@@ -66,7 +66,7 @@ class Client:
 
     async def __aexit__(self,*args,**kwargs):
         await self.close()
-        await self.context_semaphore.release()
+        self.context_semaphore.release()
         
         
     async def connect(self):
