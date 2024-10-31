@@ -13,3 +13,4 @@ src/stogram_client.egg-info/SOURCES.txt
 src/stogram_client.egg-info/dependency_links.txt
 src/stogram_client.egg-info/entry_points.txt
 src/stogram_client.egg-info/top_level.txt
+src/stogram_client/binaries/librlib.so
