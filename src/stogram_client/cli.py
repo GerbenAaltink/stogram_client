@@ -13,7 +13,7 @@ async def test():
     print(await client.connect())
     print(await client.authenticate())
     tasks = []
-    for x in range(5003):
+    for x in range(1000):
         tasks.append(client.publish("debug",dict(message_nr=x)))
         tasks.append(client.publish("test",dict(message_nr=x)))
         tasks.append(client.publish("chat",dict(message_nr=x)))

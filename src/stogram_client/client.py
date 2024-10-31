@@ -107,8 +107,10 @@ class Client:
 
     async def __aiter__(self):
         while True:
-            self.data += await self.reader.read(4096)
-            
+            chunk = await self.reader.read(4096)
+            if not chunk:
+                break
+            self.data += chunk
             length = rlib.json_length(self.data)
             if length:
                 obj = json.loads(self.data[:length])
