@@ -79,11 +79,16 @@ class Client:
         await self.writer.drain()
 
     async def publish(self, topic, data):
-        return await self.call(dict(
+        return await self.write(dict(
             event="publish",
             topic=topic,
             message=json.dumps(data,default=str)
         ))
+        #return await self.call(dict(
+        #    event="publish",
+        #    topic=topic,
+        #    message=json.dumps(data,default=str)
+        #))
 
     async def subscribe(self, topic):
         if type(topic) == list:
