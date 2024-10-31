@@ -3,6 +3,7 @@ README.md
 pyproject.toml
 setup.cfg
 src/stogram_client/__init__.py
+src/stogram_client/bench.py
 src/stogram_client/cli.py
 src/stogram_client/client.py
 src/stogram_client/db.py

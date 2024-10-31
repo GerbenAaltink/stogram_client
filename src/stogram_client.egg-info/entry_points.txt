@@ -1,4 +1,5 @@
 [console_scripts]
 stogram = stogram_client.cli:main
+stogram_bench = stogram_client.bench:main
 stogram_db = stogram_client.db:cli
 stogram_debug = stogram_client.topic_reader:cli

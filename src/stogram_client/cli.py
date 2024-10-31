@@ -7,18 +7,14 @@ from stogram_client.client import Client
 
 
 async def test():
-    
     client = Client()
     await client.add_event_handler(lambda x: print(x))
-    print(await client.connect())
-    print(await client.authenticate())
-    tasks = []
-    for x in range(1000):
-        tasks.append(client.publish("debug",dict(message_nr=x)))
-        tasks.append(client.publish("test",dict(message_nr=x)))
-        tasks.append(client.publish("chat",dict(message_nr=x)))
-       
-    await asyncio.gather(*tasks)
+    async with Client() as client:
+        tasks = []
+        for x in range(10000):
+            tasks.append(client.publish("debug",dict(message_nr=x)))
+            tasks.append(client.publish("test",dict(message_nr=x)))
+        await asyncio.gather(*tasks)
   
 
 

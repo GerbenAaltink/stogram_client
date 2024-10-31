@@ -17,6 +17,7 @@ class Client:
         self.connected = False
         self.semaphore = asyncio.Semaphore(1)
         self.context_semaphore = asyncio.Semaphore(11)
+        self.read_semaphore = asyncio.Semaphore(11)
 
     async def add_event_handler(self,handler):
         self.event_handler = handler 
@@ -41,9 +42,8 @@ class Client:
         if hasattr(obj,'encode'):
             obj = obj.decode('utf-8')
         async with self.semaphore:
-            await self.write(obj)
-            result = await self.read()
-            return result
+            result = await asyncio.gather(self.write(obj),self.read())
+        return result[0]
 
     async def authenticate(self):
         return await self.call(dict(
@@ -106,15 +106,24 @@ class Client:
         return result  
 
     async def __aiter__(self):
+        #async with self.read_semaphore:
         while True:
             chunk = await self.reader.read(4096)
             if not chunk:
                 break
             self.data += chunk
+            #while self.data[0] in ["\r".encode('utf-8'),"\n".encode('utf-8')]:
+            #    self.data = self.data[1:]
+           # print(self.data)
             length = rlib.json_length(self.data)
             if length:
+                
+                self.data = self.data[length+2:]
+                
+                print(self.data)
                 obj = json.loads(self.data[:length])
-                self.data = self.data[length + 2:]
+
+
                 yield obj
 
 
