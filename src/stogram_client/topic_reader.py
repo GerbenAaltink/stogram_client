@@ -12,7 +12,7 @@ async def read_topics(topics):
 
 
 async def main():
-    topics = ["test","debug"]
+    topics = ["test","debug","chat"]
     await read_topics(topics)
 
 def cli():

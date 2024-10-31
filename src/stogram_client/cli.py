@@ -17,11 +17,7 @@ async def test():
         tasks.append(client.publish("debug",dict(message_nr=x)))
         tasks.append(client.publish("test",dict(message_nr=x)))
        
-    tasks.append(client.subscribe("test"))
     await asyncio.gather(*tasks)
-    await client.authenticate()
-    await client.authenticate()
-    await client.authenticate()
   
 
 
