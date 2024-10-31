@@ -16,6 +16,7 @@ async def test():
     for x in range(500):
         tasks.append(client.publish("debug",dict(message_nr=x)))
         tasks.append(client.publish("test",dict(message_nr=x)))
+        tasks.append(client.publish("chat",dict(message_nr=x)))
        
     await asyncio.gather(*tasks)
   

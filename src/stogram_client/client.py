@@ -50,23 +50,23 @@ class Client:
 
     async def close(self):
         if self.writer: 
-            self.writer.close()
+            await self.writer.close()
             self.writer = None 
             self.client = None
     
     async def __aenter__(self):
         if not self.reader:
             await self.connect()
-        await self.authenticate()
         return self
 
     async def __aexit__(self,*args,**kwargs):
         await self.close()
-
+        self.reader = None 
+        self.writer = None 
     async def connect(self):
         if not self.reader:
             self.reader, self.writer = await asyncio.open_connection(self.host, self.port)
-
+            await self.authenticate()
     async def write(self,obj):
         string = json.dumps(obj)
         self.writer.write(string.encode())
@@ -99,12 +99,11 @@ class Client:
     async def __aiter__(self):
         while True:
             self.data += await self.reader.read(4096)
+            
             length = rlib.json_length(self.data)
             if length:
                 obj = json.loads(self.data[:length])
                 self.data = self.data[length + 2:]
-                #if self.data.startswith(b"\r\n"):
-                #    self.data = self.data[2:]
                 yield obj
 
 

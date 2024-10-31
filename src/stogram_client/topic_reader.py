@@ -7,6 +7,7 @@ async def read_topics(topics):
     async with Client(name="debug",host="127.0.0.1",port=8889) as client:
         await client.authenticate()
         await asyncio.gather(*[client.subscribe(t) for t in topics])
+
         async for obj in client:
             print(obj)
 
