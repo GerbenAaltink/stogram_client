@@ -13,6 +13,7 @@ class Client:
         self.event_handler = None
         self.service = None
         self.data = b''
+        self.conncted = False
         self.semaphore = asyncio.Semaphore(1)
 
     async def add_event_handler(self,handler):
@@ -49,14 +50,14 @@ class Client:
         ))
 
     async def close(self):
-        if self.writer: 
+        if self.connected:
+            self.connected = False  
             await self.writer.close()
-            self.writer = None 
-            self.reader = None
     
     async def __aenter__(self):
         if not self.reader:
             await self.connect()
+            self.connected = True 
         return self
 
     async def __aexit__(self,*args,**kwargs):
