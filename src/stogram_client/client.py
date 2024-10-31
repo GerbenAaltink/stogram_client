@@ -52,7 +52,7 @@ class Client:
         if self.writer: 
             await self.writer.close()
             self.writer = None 
-            self.client = None
+            self.reader = None
     
     async def __aenter__(self):
         if not self.reader:
@@ -61,8 +61,7 @@ class Client:
 
     async def __aexit__(self,*args,**kwargs):
         await self.close()
-        self.reader = None 
-        self.writer = None 
+        
     async def connect(self):
         if not self.reader:
             self.reader, self.writer = await asyncio.open_connection(self.host, self.port)
