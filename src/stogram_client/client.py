@@ -2,6 +2,7 @@ from stogram_client import rlib
 import asyncio
 import json
 import uuid
+import socket
 
 class Client:
     def __init__(self, name=None, host="127.0.0.1", port=8889):
@@ -18,6 +19,8 @@ class Client:
         self.semaphore = asyncio.Semaphore(1)
         self.context_semaphore = asyncio.Semaphore(11)
         self.read_semaphore = asyncio.Semaphore(11)
+        self.socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM);
+        self.connected_sync = False
 
     async def add_event_handler(self,handler):
         self.event_handler = handler 
@@ -39,17 +42,30 @@ class Client:
                 await self.event_handler(obj)
 
     async def call(self, obj):
-        if hasattr(obj,'encode'):
-            obj = obj.decode('utf-8')
-        async with self.semaphore:
-            result = await asyncio.gather(self.write(obj),self.read())
-        return result[0]
+        if self.connected:
+        
+            if hasattr(obj,'encode'):
+                obj = obj.decode('utf-8')
+            async with self.semaphore:
+                await self.write(obj)
+                result = await self.read()
+                return result
+        else:
+            return await call_sync(self,obj)
+
 
     async def authenticate(self):
         return await self.call(dict(
             subscriber=self.name,
             event="register"
         ))
+
+    async def authenticate_sync(self):
+        return await self.call_sync(dict(
+            subscriber=self.name,
+            event="register"
+        ))
+
 
     def close(self):
         if self.connected:
@@ -79,7 +95,7 @@ class Client:
         await self.writer.drain()
 
     async def publish(self, topic, data):
-        return await self.call(dict(
+        return await self.call_sync(dict(
             event="publish",
             topic=topic,
             message=json.dumps(data,default=str)
@@ -105,27 +121,63 @@ class Client:
             break 
         return result  
 
+    async def call_sync(self, data):
+        if not self.connected_sync:
+            self.socket.connect((self.host,self.port))
+            self.connected_sync = True
+            await self.authenticate_sync()
+        data = json.dumps(data)
+        self.socket.sendall(data.encode('utf-8'))
+        data = b''
+        while True:
+            chunk = self.socket.recv(4096)
+            if not chunk:
+                break
+            data += chunk
+            
+            if data.startswith(b'\r\n'):
+                data = data[2:]
+           
+            #print(self.data)
+
+            length = rlib.json_length(data)
+
+            if length:
+                obj = json.loads(data[:length])
+                data = data[length:]
+                
+                if data.endswith(b'\r\n'):
+                    data = data[2:]
+     
+                return obj 
+
+
     async def __aiter__(self):
         #async with self.read_semaphore:
         while True:
             chunk = await self.reader.read(4096)
+            
+
             if not chunk:
                 break
-            
             self.data += chunk
-            print(self.data)
-            #while self.data[0] in ["\r".encode('utf-8'),"\n".encode('utf-8')]:
-            #    self.data = self.data[1:]
-           # print(self.data)
+            
+
+            
+            if self.data.startswith(b'\r\n'):
+                self.data = self.data[2:]
+           
+            #print(self.data)
+
             length = rlib.json_length(self.data)
+
             if length:
-                
-                self.data = self.data[length+2:]
-                
-                print(self.data)
                 obj = json.loads(self.data[:length])
-
-
+                self.data = self.data[length:]
+                
+                if self.data.endswith(b'\r\n'):
+                    self.data = self.data[2:]
+     
                 yield obj
 
 

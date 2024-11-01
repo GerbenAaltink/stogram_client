@@ -5,7 +5,7 @@ import os
 
 class Database:
     def __init__(self,host="127.0.0.1", port=8889):
-        self.name = "db_client"
+        self.name = None
         self.host = host 
         self.port = port 
         self.stogram = None 
@@ -19,7 +19,7 @@ class Database:
     
     async def __aexit__(self, type, value, traceback):
         if self.stogram:
-            await self.stogram.close()
+            self.stogram.close()
 
     async def execute(self,query,params=[]):
         return await self.stogram.execute(query,params=params)

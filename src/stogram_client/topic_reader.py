@@ -1,4 +1,5 @@
 
+
 from stogram_client.client import Client 
 import asyncio 
 import json
@@ -10,20 +11,13 @@ async def read_topics(topics):
         await asyncio.gather(*[client.subscribe(t) for t in topics])
         time_start = time.time()
         async for obj in client:
-            #print("\033[H\033[J",end="")
-            print(obj)
             topic = None
-            obj = None
-            #if not obj:
-            #    await asyncio.sleep(1)
-            #    continue
             try:
-                topic = obj['rows'][0][6]
-                obj = json.loads(obj['rows'][0][len(obj['rows'][0])-1])
+                if len(obj['columns']) == 7 and obj['columns'][6] == 'topic':
+                    topic = obj['rows'][0][6]
+                    obj = json.loads(obj['rows'][0][7])
             except Exception as ex:
-                print(ex)
-                print(obj)
-                continue
+                pass
             if topic not in events_received:
                 events_received[topic] = 0
             events_received[topic] += 1

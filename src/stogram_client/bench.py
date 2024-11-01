@@ -16,12 +16,11 @@ async def publish(times):
 
 async def bench(times,read=False):
     topics = ['chat','debug','test']
-    tasks = []
+    task = None
     if read:
-        tasks.append(asyncio.create_task(read_topics(topics)))
-    tasks.append(asyncio.create_task(publish(times)))
-    await asyncio.gather(*tasks)
-
+        task = asyncio.create_task(read_topics(topics))
+    await asyncio.create_task(publish(times))
+    task.cancel()
 def main():
     import sys
     times = 0
