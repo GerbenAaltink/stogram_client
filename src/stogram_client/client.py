@@ -111,7 +111,9 @@ class Client:
             chunk = await self.reader.read(4096)
             if not chunk:
                 break
+            
             self.data += chunk
+            print(self.data)
             #while self.data[0] in ["\r".encode('utf-8'),"\n".encode('utf-8')]:
             #    self.data = self.data[1:]
            # print(self.data)
