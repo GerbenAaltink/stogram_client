@@ -19,7 +19,14 @@ class Client:
         self.bytes_sent = 0
         self.bytes_received = 0
 
+    def close(self):
+        if self.sock:
+            self.sock.close() 
+            self.sock = None
+
     def connect(self):
+        if self.sock:
+            self.close()
         if not self.sock:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.sock.connect((self.host,int(self.port)))
@@ -32,7 +39,7 @@ class Client:
         return self
     
     def publish(self, topic, data):
-        return self.call(dict(event="publish", topic=topic, message=json.dumps(data)))
+        return self.call(dict(event="publish", topic=topic, message=data))
 
     def __exit__(self, *args, **kwargs):
         self.sock.close()
