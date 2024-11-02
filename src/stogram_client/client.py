@@ -29,7 +29,7 @@ class Client:
             self.service = asyncio.create_task(self.run())
 
     async def execute(self,query,params=[]):
-        return await self.call_sync(dict(
+        return await self.call(dict(
             event="execute",
             query=query,
             params=params
@@ -78,7 +78,6 @@ class Client:
         return self
 
     async def __aexit__(self,*args,**kwargs):
-        self.close()
         self.context_semaphore.release()
         
         
@@ -106,7 +105,7 @@ class Client:
                 tasks.append(self.subscribe(t))
             return await asyncio.gather(*tasks)
             
-        await self.call(dict(
+        return await self.call(dict(
             subscriber=self.name,
             event="subscribe",
             topic=topic
