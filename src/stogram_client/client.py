@@ -29,7 +29,7 @@ class Client:
             self.service = asyncio.create_task(self.run())
 
     async def execute(self,query,params=[]):
-        return await self.call_async(dict(
+        return await self.call_sync(dict(
             event="execute",
             query=query,
             params=params

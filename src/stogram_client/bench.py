@@ -1,14 +1,17 @@
 import asyncio 
 from stogram_client import Client
 from stogram_client.topic_reader import read_topics 
+import random
 
 async def publish(times):
-    client = Client()
-    async with Client() as client:
+    port = random.choice([8889,9000,9001]) 
+    print("Sending to port",port)
+    async with Client(port=port) as client:
         tasks = []
         for x in range(times):
             tasks.append(client.publish("debug",dict(message_nr=x)))
             tasks.append(client.publish("test",dict(message_nr=x)))
+        print("Sending to port",port)
         await asyncio.gather(*tasks)
   
 
@@ -16,11 +19,11 @@ async def publish(times):
 
 async def bench(times,read=False):
     topics = ['chat','debug','test']
-    task = None
+    tasks = []
     if read:
-        task = asyncio.create_task(read_topics(topics))
-    await asyncio.create_task(publish(times))
-    task.cancel()
+        tasks.append(asyncio.create_task(read_topics(topics)))
+    tasks.append(asyncio.create_task(publish(times)))
+    return await asyncio.gather(*tasks)
 def main():
     import sys
     times = 0

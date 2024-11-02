@@ -8,6 +8,7 @@ src/stogram_client/cli.py
 src/stogram_client/client.py
 src/stogram_client/db.py
 src/stogram_client/rlib.py
+src/stogram_client/sync.py
 src/stogram_client/topic_reader.py
 src/stogram_client.egg-info/PKG-INFO
 src/stogram_client.egg-info/SOURCES.txt
