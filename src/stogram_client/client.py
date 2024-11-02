@@ -50,8 +50,6 @@ class Client:
                 await self.write(obj)
                 result = await self.read()
                 return result
-        else:
-            return await call_sync(self,obj)
 
 
     async def authenticate(self):
@@ -95,7 +93,7 @@ class Client:
         await self.writer.drain()
 
     async def publish(self, topic, data):
-        return await self.call_sync(dict(
+        return await self.call(dict(
             event="publish",
             topic=topic,
             message=json.dumps(data,default=str)
