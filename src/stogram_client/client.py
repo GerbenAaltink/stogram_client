@@ -15,6 +15,7 @@ class Client:
         self.event_handler = None
         self.service = None
         self.data = b''
+        self.dato = b''
         self.connected = False
         self.semaphore = asyncio.Semaphore(1)
         self.context_semaphore = asyncio.Semaphore(11)
@@ -46,10 +47,18 @@ class Client:
         
             if hasattr(obj,'encode'):
                 obj = obj.decode('utf-8')
+
+
+            
+            result = None
             async with self.semaphore:
-                await self.write(obj)
-                result = await self.read()
-                return result
+
+                #await self.write(obj)
+                #result = await self.read() 
+
+                result = await asyncio.gather(self.write(obj),self.read())
+
+            return result[1]
 
 
     async def authenticate(self):
@@ -76,10 +85,10 @@ class Client:
             await self.connect()
             self.connected = True 
         return self
+    
+    async def __aexit__(self, type, value, traceback):
+        self.close()
 
-    async def __aexit__(self,*args,**kwargs):
-        self.context_semaphore.release()
-        
         
     async def connect(self):
         if not self.connected:
@@ -95,7 +104,7 @@ class Client:
         return await self.call(dict(
             event="publish",
             topic=topic,
-            message=json.dumps(data,default=str)
+            message=data
         ))
 
     async def subscribe(self, topic):
@@ -135,8 +144,6 @@ class Client:
             if data.startswith(b'\r\n'):
                 data = data[2:]
            
-            #print(self.data)
-
             length = rlib.json_length(data)
 
             if length:
@@ -150,31 +157,11 @@ class Client:
 
 
     async def __aiter__(self):
-        #async with self.read_semaphore:
-        while True:
-            chunk = await self.reader.read(4096)
-            
-
-            if not chunk:
-                break
+        while chunk := await self.reader.read(4096):
             self.data += chunk
-            
-
-            
-            if self.data.startswith(b'\r\n'):
-                self.data = self.data[2:]
-           
-            #print(self.data)
-
             length = rlib.json_length(self.data)
-
             if length:
                 obj = json.loads(self.data[:length])
                 self.data = self.data[length:]
-                
-                if self.data.endswith(b'\r\n'):
-                    self.data = self.data[2:]
-     
                 yield obj
-
 

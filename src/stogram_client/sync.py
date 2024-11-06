@@ -39,18 +39,23 @@ class Client:
         return self
     
     def publish(self, topic, data):
-        return self.call(dict(event="publish", topic=topic, message=data))
+        return self.write(dict(event="publish", topic=topic, message=data))
 
     def __exit__(self, *args, **kwargs):
         self.sock.close()
         self.sock = None
         print("Conncetion closed")
 
-    def call(self, obj):
-        #self.connect()
+    def write(self,obj):
         obj_bytes = json.dumps(obj).encode('utf-8')
         self.sock.sendall(obj_bytes)
-        self.bytes_sent += len(obj_bytes)
+        self.bytes_sent += len(obj_bytes) 
+        
+
+    def call(self, obj):
+        #self.connect()
+        self.write(obj)
+         
         bytes_ = b''
         while True:
             bytes_ += self.sock.recv(4096)

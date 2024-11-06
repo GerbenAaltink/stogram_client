@@ -4,7 +4,7 @@ from stogram_client.topic_reader import read_topics
 import random
 
 async def publish(times):
-    port = random.choice([8889,9000,9001]) 
+    port = random.choice([8889]) 
     print("Sending to port",port)
     async with Client(port=port) as client:
         tasks = []
