@@ -29,11 +29,11 @@ class Client:
         if self.service is None:
             self.service = asyncio.create_task(self.run())
 
-    async def execute(self,query,params=[]):
+    async def execute(self,query,params=None):
         return await self.call(dict(
             event="execute",
             query=query,
-            params=params
+            params=params or []
         ))
 
     async def run(self):
