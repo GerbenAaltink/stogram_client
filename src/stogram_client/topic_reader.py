@@ -8,7 +8,6 @@ import random
 
 async def read_topics(topics, host="127.0.0.1",port=9000,name=None):
     events_received = {}
-    port = 7001
     async with Client(host="127.0.0.1",port=port,name=name) as client:
         await asyncio.gather(*[client.subscribe(t) for t in topics])
         time_start = time.time()
@@ -31,10 +30,11 @@ async def read_topics(topics, host="127.0.0.1",port=9000,name=None):
 
 async def main():
     topics = ["test","debug","chat"]
-    await read_topics(topics, port=7001, name="debug_client")
+    await read_topics(topics, port=8889)
 
 def cli():
     asyncio.run(main())   
 
 if __name__ == '__main__':
     cli()
+

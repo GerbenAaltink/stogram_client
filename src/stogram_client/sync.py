@@ -8,7 +8,7 @@ class Client:
     
 
 
-    def __init__(self, host, port=7001):
+    def __init__(self, host, port=8889):
         print("Address: {}:{}".format(host,port))
 
 
